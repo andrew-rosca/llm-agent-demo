@@ -44,10 +44,16 @@ export const validatePassphrase = (passphrase: string): { valid: boolean; messag
  */
 export const copyToClipboard = async (text: string): Promise<boolean> => {
   try {
-    // In React Native, we'll use Expo Clipboard
-    const { setStringAsync } = await import('expo-clipboard');
-    await setStringAsync(text);
-    return true;
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      // Use web clipboard API if available
+      await navigator.clipboard.writeText(text);
+      return true;
+    } else {
+      // Fallback to Expo Clipboard for React Native
+      const { setStringAsync } = await import('expo-clipboard');
+      await setStringAsync(text);
+      return true;
+    }
   } catch (error) {
     console.error('Failed to copy to clipboard:', error);
     return false;

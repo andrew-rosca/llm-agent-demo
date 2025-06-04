@@ -1,5 +1,5 @@
 import * as openpgp from 'openpgp';
-import * as SecureStore from 'expo-secure-store';
+import CustomSecureStore from '../components/CustomSecureStore';
 import {
   PGPResult,
   StoredKeyPair,
@@ -41,7 +41,7 @@ export class PGPService {
       };
 
       // Store private key securely
-      await SecureStore.setItemAsync(
+      await CustomSecureStore.setItemAsync(
         `${this.PRIVATE_KEY_PREFIX}${keyId}`,
         privateKey
       );
@@ -100,7 +100,7 @@ export class PGPService {
 
       // Store private key if available
       if (hasPrivateKey && privateKeyArmored) {
-        await SecureStore.setItemAsync(
+        await CustomSecureStore.setItemAsync(
           `${this.PRIVATE_KEY_PREFIX}${keyId}`,
           privateKeyArmored
         );
@@ -159,14 +159,13 @@ export class PGPService {
 
   /**
    * Decrypt a message using a private key
-   */
-  static async decryptMessage(
-    encryptedMessage: string, 
-    keyId: string, 
+   */  static async decryptMessage(
+    encryptedMessage: string,
+    keyId: string,
     passphrase: string
   ): Promise<PGPResult> {
     try {
-      const privateKeyArmored = await SecureStore.getItemAsync(`${this.PRIVATE_KEY_PREFIX}${keyId}`);
+      const privateKeyArmored = await CustomSecureStore.getItemAsync(`${this.PRIVATE_KEY_PREFIX}${keyId}`);
       
       if (!privateKeyArmored) {
         return {
@@ -203,14 +202,13 @@ export class PGPService {
 
   /**
    * Sign a message using a private key
-   */
-  static async signMessage(
-    message: string, 
-    keyId: string, 
+   */  static async signMessage(
+    message: string,
+    keyId: string,
     passphrase: string
   ): Promise<PGPResult> {
     try {
-      const privateKeyArmored = await SecureStore.getItemAsync(`${this.PRIVATE_KEY_PREFIX}${keyId}`);
+      const privateKeyArmored = await CustomSecureStore.getItemAsync(`${this.PRIVATE_KEY_PREFIX}${keyId}`);
       
       if (!privateKeyArmored) {
         return {
@@ -316,7 +314,7 @@ export class PGPService {
    */
   static async getAllKeys(): Promise<StoredKeyPair[]> {
     try {
-      const stored = await SecureStore.getItemAsync(this.KEYS_STORAGE_KEY);
+      const stored = await CustomSecureStore.getItemAsync(this.KEYS_STORAGE_KEY);
       if (!stored) return [];
       
       const keys: StoredKeyPair[] = JSON.parse(stored);
@@ -340,14 +338,14 @@ export class PGPService {
       const existingKeys = await this.getAllKeys();
       const updatedKeys = existingKeys.filter(k => k.keyId !== keyId);
       
-      await SecureStore.setItemAsync(
+      await CustomSecureStore.setItemAsync(
         this.KEYS_STORAGE_KEY,
         JSON.stringify(updatedKeys)
       );
       
       // Remove private key from secure storage if it exists
       try {
-        await SecureStore.deleteItemAsync(`${this.PRIVATE_KEY_PREFIX}${keyId}`);
+        await CustomSecureStore.deleteItemAsync(`${this.PRIVATE_KEY_PREFIX}${keyId}`);
       } catch {
         // Private key might not exist, ignore error
       }
@@ -371,7 +369,7 @@ export class PGPService {
     const updatedKeys = existingKeys.filter(k => k.keyId !== keyPair.keyId);
     updatedKeys.push(keyPair);
     
-    await SecureStore.setItemAsync(
+    await CustomSecureStore.setItemAsync(
       this.KEYS_STORAGE_KEY,
       JSON.stringify(updatedKeys)
     );
