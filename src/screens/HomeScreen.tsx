@@ -7,9 +7,10 @@ import {
   TouchableOpacity,
   Alert,
   RefreshControl,
+  Platform,
 } from 'react-native';
-import { PGPKeyPair, StoredKeyPair } from '../types';
 import { PGPService } from '../services/PGPService';
+import { StoredKeyPair } from '../types';
 import CustomButton from '../components/CustomButton';
 import { formatDate, getShortKeyId } from '../utils/helpers';
 

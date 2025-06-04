@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   RefreshControl,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useFocusEffect } from '@react-navigation/native';
 import CustomButton from '../components/CustomButton';
@@ -188,16 +187,16 @@ export const KeyManagementScreen: React.FC<Props> = ({ navigation }) => {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
         <View style={styles.loadingContainer}>
           <Text style={styles.loadingText}>Loading keys...</Text>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Key Management</Text>
         <Text style={styles.subtitle}>
@@ -257,7 +256,7 @@ export const KeyManagementScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         </>
       )}
-    </SafeAreaView>
+    </View>
   );
 };
 

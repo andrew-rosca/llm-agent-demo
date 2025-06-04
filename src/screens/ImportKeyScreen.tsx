@@ -8,9 +8,8 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { StackNavigationProp } from '@react-navigation/stack';
-import DocumentPicker from 'react-native-document-picker';
+import CustomDocumentPicker from '../components/CustomDocumentPicker';
 import CustomButton from '../components/CustomButton';
 import CustomInput from '../components/CustomInput';
 import { PGPService } from '../services/PGPService';
@@ -81,23 +80,31 @@ export const ImportKeyScreen: React.FC<Props> = ({ navigation }) => {
 
   const handlePickFile = async () => {
     try {
-      const result = await DocumentPicker.pick({
-        type: [DocumentPicker.types.allFiles],
+      const result = await CustomDocumentPicker.pick({
+        type: [CustomDocumentPicker.types.allFiles],
         copyTo: 'documentDirectory',
       });
 
       if (result && result.length > 0) {
         const file = result[0];
         
-        // Read file content (for demonstration, you might need react-native-fs for actual file reading)
-        // This is a simplified version - in production you'd read the actual file content
-        Alert.alert(
-          'File Selected',
-          `Selected: ${file.name}\n\nPlease copy and paste the key content manually for now.`
-        );
+        // On web, we can directly use the file content
+        if (Platform.OS === 'web' && file.content) {
+          setKeyText(file.content);
+          Alert.alert(
+            'File Loaded',
+            `Successfully loaded key from: ${file.name}`
+          );
+        } else {
+          // On mobile, show the file selection message
+          Alert.alert(
+            'File Selected',
+            `Selected: ${file.name}\n\nPlease copy and paste the key content manually for now.`
+          );
+        }
       }
     } catch (error) {
-      if (!DocumentPicker.isCancel(error)) {
+      if (!CustomDocumentPicker.isCancel(error)) {
         Alert.alert('Error', 'Failed to pick file');
       }
     }
@@ -134,7 +141,7 @@ export const ImportKeyScreen: React.FC<Props> = ({ navigation }) => {
   const keyInfo = getKeyInfo();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <KeyboardAvoidingView
         style={styles.keyboardAvoid}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -222,7 +229,7 @@ export const ImportKeyScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 };
 

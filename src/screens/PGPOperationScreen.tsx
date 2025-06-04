@@ -9,8 +9,7 @@ import {
   Platform,
   TouchableOpacity,
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { CustomPicker } from '../components/CustomPicker';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import CustomButton from '../components/CustomButton';
@@ -214,7 +213,7 @@ export const PGPOperationScreen: React.FC<Props> = ({ navigation, route }) => {
   const publicKeys = availableKeys;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <KeyboardAvoidingView
         style={styles.keyboardAvoid}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -228,21 +227,23 @@ export const PGPOperationScreen: React.FC<Props> = ({ navigation, route }) => {
             <View style={styles.operationSelector}>
               <Text style={styles.sectionTitle}>Operation</Text>
               <View style={styles.pickerContainer}>
-                <Picker
+                <CustomPicker
                   selectedValue={operation}
-                  onValueChange={(value: PGPOperationType) => {
-                    setOperation(value);
+                  onValueChange={(value: string) => {
+                    setOperation(value as PGPOperationType);
                     setInputText('');
                     setOutputText('');
                     setInputError('');
                   }}
+                  items={[
+                    { label: "🔒 Encrypt Message", value: "encrypt" },
+                    { label: "🔓 Decrypt Message", value: "decrypt" },
+                    { label: "✍️ Sign Message", value: "sign" },
+                    { label: "✅ Verify Signature", value: "verify" }
+                  ]}
                   style={styles.picker}
-                >
-                  <Picker.Item label="🔒 Encrypt Message" value="encrypt" />
-                  <Picker.Item label="🔓 Decrypt Message" value="decrypt" />
-                  <Picker.Item label="✍️ Sign Message" value="sign" />
-                  <Picker.Item label="✅ Verify Signature" value="verify" />
-                </Picker>
+                  placeholder="Select operation..."
+                />
               </View>
             </View>
 
@@ -251,20 +252,19 @@ export const PGPOperationScreen: React.FC<Props> = ({ navigation, route }) => {
               <View style={styles.keySelector}>
                 <Text style={styles.sectionTitle}>Recipient's Public Key</Text>
                 <View style={styles.pickerContainer}>
-                  <Picker
+                  <CustomPicker
                     selectedValue={recipientKeyId}
                     onValueChange={setRecipientKeyId}
+                    items={[
+                      { label: "Select a public key...", value: "" },
+                      ...publicKeys.map((key) => ({
+                        label: `${key.name} <${key.email}>`,
+                        value: key.keyId
+                      }))
+                    ]}
                     style={styles.picker}
-                  >
-                    <Picker.Item label="Select a public key..." value="" />
-                    {publicKeys.map((key) => (
-                      <Picker.Item
-                        key={key.keyId}
-                        label={`${key.name} <${key.email}>`}
-                        value={key.keyId}
-                      />
-                    ))}
-                  </Picker>
+                    placeholder="Select a public key..."
+                  />
                 </View>
               </View>
             )}
@@ -275,20 +275,19 @@ export const PGPOperationScreen: React.FC<Props> = ({ navigation, route }) => {
                   {needsPassphrase ? 'Your Private Key' : 'Your Key'}
                 </Text>
                 <View style={styles.pickerContainer}>
-                  <Picker
+                  <CustomPicker
                     selectedValue={selectedKeyId}
                     onValueChange={setSelectedKeyId}
+                    items={[
+                      { label: "Select a key...", value: "" },
+                      ...(needsPassphrase ? privateKeys : publicKeys).map((key) => ({
+                        label: `${key.name} <${key.email}>`,
+                        value: key.keyId
+                      }))
+                    ]}
                     style={styles.picker}
-                  >
-                    <Picker.Item label="Select a key..." value="" />
-                    {(needsPassphrase ? privateKeys : publicKeys).map((key) => (
-                      <Picker.Item
-                        key={key.keyId}
-                        label={`${key.name} <${key.email}>`}
-                        value={key.keyId}
-                      />
-                    ))}
-                  </Picker>
+                    placeholder="Select a key..."
+                  />
                 </View>
               </View>
             )}
@@ -357,7 +356,7 @@ export const PGPOperationScreen: React.FC<Props> = ({ navigation, route }) => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 };
 
