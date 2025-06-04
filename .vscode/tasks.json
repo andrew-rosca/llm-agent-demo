@@ -1,0 +1,41 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start Expo Development Server",
+			"type": "shell",
+			"command": "npx expo start",
+			"group": "build",
+			"isBackground": true,
+			"problemMatcher": [],
+			"args": []
+		},
+		{
+			"label": "Build TypeScript",
+			"type": "shell",
+			"command": "npx tsc --noEmit",
+			"group": "build",
+			"problemMatcher": [
+				"$tsc"
+			],
+			"args": []
+		},
+		{
+			"label": "Install Dependencies",
+			"type": "shell",
+			"command": "npm install",
+			"group": "build",
+			"problemMatcher": [],
+			"args": []
+		},
+		{
+			"label": "Start Expo Development Server (Web)",
+			"type": "shell",
+			"command": "npx expo start --web",
+			"group": "build",
+			"isBackground": true,
+			"problemMatcher": [],
+			"args": []
+		}
+	]
+}
